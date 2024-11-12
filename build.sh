@@ -38,9 +38,9 @@ echo "X-AppImage-Version=$KITTY_VERSION" >> kitty.desktop
 cd ..
 cp ../AppRun ./AppDir
 
-wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-arm64.AppImage  # Change to arm64 version
-chmod +x appimagetool-arm64.AppImage
-./appimagetool-arm64.AppImage AppDir -n -u "gh-releases-zsync|lucasscvvieira|kitty-appimage|stable|Kitty*.AppImage.zsync" "Kitty-$KITTY_VERSION-arm64.AppImage"  # Change to arm64 version
+wget https://github.com/AppImage/AppImageKit/releases/download/13/appimagetool-aarch64.AppImage  # Change to arm64 version
+chmod +x appimagetool-aarch64.AppImage
+./appimagetool-aarch64.AppImage AppDir -n -u "gh-releases-zsync|lucasscvvieira|kitty-appimage|stable|Kitty*.AppImage.zsync" "Kitty-$KITTY_VERSION-arm64.AppImage"  # Change to arm64 version
 chmod +x Kitty*.AppImage
 
 mkdir dist
