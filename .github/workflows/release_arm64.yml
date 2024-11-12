@@ -1,1 +1,35 @@
+name: Release
 
+on:
+  schedule:
+    - cron: "0 0 * * 1"  # Runs every Monday at midnight UTC
+  push:
+    branches:
+      - arm64
+
+jobs:
+  Kitty:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version: ['3.8']
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget tar libfuse2  # Install wget, tar, and libfuse2 for AppImage support
+
+      - name: Build Kitty AppImage
+        run: ./build.sh
+
+      - name: Release
+        uses: marvinpinto/action-automatic-releases@latest
+        with:
+          title: Kitty Stable AppImage Builds
+          automatic_release_tag: stable
+          prerelease: false
+          draft: false
+          files: ./kitty/dist/Kitty-*-x86_64.AppImage*
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
