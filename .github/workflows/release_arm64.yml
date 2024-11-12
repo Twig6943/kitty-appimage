@@ -5,17 +5,14 @@ on:
     - cron: "0 0 * * 1"  # Runs every Monday at midnight UTC
   push:
     branches:
-      - arm64
-  workflow_dispatch:  # Allows manual triggering
+      - main
 
 jobs:
   Kitty:
-    runs-on: ubuntu-22.04  # Using ARM64-compatible Ubuntu 22.04 runner
-
+    runs-on: ubuntu-latest-arm64
     strategy:
       matrix:
         version: ['3.8']
-
     steps:
       - uses: actions/checkout@v2
 
@@ -23,18 +20,9 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y wget tar libfuse2  # Install wget, tar, and libfuse2 for AppImage support
-          sudo apt-get install -y qemu-user-static  # Install QEMU for ARM64 emulation
-
-      - name: Download appimagetool for ARM64
-        run: |
-          # Download the ARM64 appimagetool binary directly
-          wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O appimagetool
-          chmod +x appimagetool  # Make it executable
 
       - name: Build Kitty AppImage
-        run: |
-          # Run appimagetool directly to build the ARM64 AppImage
-          ./appimagetool /mnt/AppDir -n -u "https://github.com/lucasscvvieira/kitty-appimage/releases/download/stable/Kitty*.AppImage.zsync" /mnt/Kitty--arm64.AppImage
+        run: ./build.sh
 
       - name: Release
         uses: marvinpinto/action-automatic-releases@latest
@@ -43,5 +31,5 @@ jobs:
           automatic_release_tag: stable
           prerelease: false
           draft: false
-          files: ./kitty/dist/Kitty-*-arm64.AppImage*  # Change architecture from x86_64 to arm64
+          files: ./kitty/dist/Kitty-*-x86_64.AppImage*
           repo_token: ${{ secrets.GITHUB_TOKEN }}
