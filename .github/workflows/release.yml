@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        version: ['3.8']
+        arch: [x86_64, arm64, i386]  # Add arm64 and i386 architectures
     steps:
       - uses: actions/checkout@v2
 
@@ -22,7 +22,7 @@ jobs:
           sudo apt-get install -y wget tar libfuse2  # Install wget, tar, and libfuse2 for AppImage support
 
       - name: Build Kitty AppImage
-        run: ./build.sh
+        run: ./build.sh ${{ matrix.arch }}  # Pass the architecture to the build script
 
       - name: Release
         uses: marvinpinto/action-automatic-releases@latest
@@ -31,5 +31,5 @@ jobs:
           automatic_release_tag: stable
           prerelease: false
           draft: false
-          files: ./kitty/dist/Kitty-*-x86_64.AppImage*
+          files: ./kitty/dist/Kitty-*-{{ matrix.arch }}.AppImage*
           repo_token: ${{ secrets.GITHUB_TOKEN }}
