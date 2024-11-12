@@ -25,14 +25,16 @@ jobs:
           sudo apt-get install -y wget tar libfuse2  # Install wget, tar, and libfuse2 for AppImage support
           sudo apt-get install -y qemu-user-static  # Install QEMU for ARM64 emulation
 
-      - name: Set up Docker for ARM64 emulation
+      - name: Download appimagetool for ARM64
         run: |
-          docker buildx create --use  # Enable multi-architecture build support
+          # Download the ARM64 appimagetool binary directly
+          wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O appimagetool
+          chmod +x appimagetool  # Make it executable
 
       - name: Build Kitty AppImage
         run: |
-          # Run the appimagetool for ARM64 in Docker
-          docker run --rm -v $(pwd):/mnt ghcr.io/appimage/appimagetool:latest /mnt/AppDir -n -u "https://github.com/lucasscvvieira/kitty-appimage/releases/download/stable/Kitty*.AppImage.zsync" /mnt/Kitty--arm64.AppImage
+          # Run appimagetool directly to build the ARM64 AppImage
+          ./appimagetool /mnt/AppDir -n -u "https://github.com/lucasscvvieira/kitty-appimage/releases/download/stable/Kitty*.AppImage.zsync" /mnt/Kitty--arm64.AppImage
 
       - name: Release
         uses: marvinpinto/action-automatic-releases@latest
