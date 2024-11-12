@@ -28,11 +28,11 @@ jobs:
       - name: Set up Docker for ARM64 emulation
         run: |
           docker buildx create --use  # Enable multi-architecture build support
-          docker buildx build --platform linux/arm64 -t appimagetool-arm64 .
 
       - name: Build Kitty AppImage
         run: |
-          docker run --rm -v $(pwd):/mnt appimagetool-arm64 /mnt/AppDir -n -u gh-releases-zsync|lucasscvvieira|kitty-appimage|stable|Kitty*.AppImage.zsync Kitty--arm64.AppImage
+          # Pull the pre-built appimagetool for ARM64 if you don't have a custom Dockerfile
+          docker run --rm -v $(pwd):/mnt  ghcr.io/AppImage/AppImageKit/appimagetool:latest /mnt/AppDir -n -u gh-releases-zsync|lucasscvvieira|kitty-appimage|stable|Kitty*.AppImage.zsync Kitty--arm64.AppImage
 
       - name: Release
         uses: marvinpinto/action-automatic-releases@latest
