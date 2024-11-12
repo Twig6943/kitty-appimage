@@ -1,16 +1,6 @@
-name: Release
-
-on:
-  schedule:
-    - cron: "0 0 * * 1"  # Runs every Monday at midnight UTC
-  push:
-    branches:
-      - main
-  workflow_dispatch:  # Allows manual triggering via GitHub UI
-
 jobs:
   Kitty:
-    runs-on: ubuntu-latest-arm64
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         version: ['3.8']
@@ -20,10 +10,15 @@ jobs:
       - name: Set up dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y wget tar libfuse2  # Install wget, tar, and libfuse2 for AppImage support
+          sudo apt-get install -y wget tar libfuse2
 
-      - name: Build Kitty AppImage
-        run: ./build.sh
+      - name: Run in ARM64 Docker container
+        run: |
+          docker run --rm --platform linux/arm64 ubuntu:22.04 bash -c "
+            sudo apt-get update && 
+            sudo apt-get install -y wget tar libfuse2 && 
+            ./build.sh
+          "
 
       - name: Release
         uses: marvinpinto/action-automatic-releases@latest
