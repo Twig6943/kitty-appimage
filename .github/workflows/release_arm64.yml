@@ -1,35 +1,39 @@
-name: Release
+name: Build for ARM64 Linux
 
 on:
-  schedule:
-    - cron: "0 0 * * 1"  # Runs every Monday at midnight UTC
   push:
     branches:
-      - arm64
+      - main
 
 jobs:
-  Kitty:
-    runs-on: ubuntu-latest-arm64
-    strategy:
-      matrix:
-        version: ['3.8']
-    steps:
-      - uses: actions/checkout@v2
+  build:
+    runs-on: ubuntu-22.04  # GitHub Actions runner based on Ubuntu 22.04
 
-      - name: Set up dependencies
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up QEMU for ARM64 emulation (if needed)
+        uses: docker/setup-buildx-action@v2
+        with:
+          use-qemu: true
+
+      - name: Set up ARM64 architecture for Docker build
+        run: |
+          docker buildx create --use
+          docker buildx build --platform linux/arm64,linux/amd64 -t your-image-name .
+
+      - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y wget tar libfuse2  # Install wget, tar, and libfuse2 for AppImage support
+          sudo apt-get install -y build-essential
 
-      - name: Build Kitty AppImage
-        run: ./build.sh
+      - name: Build project
+        run: |
+          make # or any other build command for your project
 
-      - name: Release
-        uses: marvinpinto/action-automatic-releases@latest
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v2
         with:
-          title: Kitty Stable AppImage Builds
-          automatic_release_tag: stable
-          prerelease: false
-          draft: false
-          files: ./kitty/dist/Kitty-*-x86_64.AppImage*
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          name: arm64-build-artifact
+          path: ./build/output-directory  # Replace with actual path
