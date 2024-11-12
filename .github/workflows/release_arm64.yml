@@ -1,3 +1,13 @@
+name: Release
+
+on:
+  schedule:
+    - cron: "0 0 * * 1"  # Runs every Monday at midnight UTC
+  push:
+    branches:
+      - main
+  workflow_dispatch:  # Allows manual triggering via GitHub UI
+
 jobs:
   Kitty:
     runs-on: ubuntu-latest
