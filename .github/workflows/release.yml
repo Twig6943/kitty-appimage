@@ -16,9 +16,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Set up dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget tar libfuse2  # Install wget, tar, and libfuse2 for AppImage support
+
       - name: Build Kitty AppImage
         run: ./build.sh
-       
+
       - name: Release
         uses: marvinpinto/action-automatic-releases@latest
         with:
