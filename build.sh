@@ -1,15 +1,19 @@
-#/bin/sh
+#!/bin/sh
 
 set -x
 
 mkdir -p kitty/AppDir/usr
 cd kitty
 
-# download kitty
-wget https://github.com/kovidgoyal/kitty/releases/download/v0.20.2/kitty-0.20.2-x86_64.txz
+# Fetch the latest release tag from GitHub
+LATEST_VERSION=$(curl -s https://api.github.com/repos/kovidgoyal/kitty/releases/latest | grep -Po '"tag_name": "\K.*?(?=")')
+LATEST_URL="https://github.com/kovidgoyal/kitty/releases/download/$LATEST_VERSION/kitty-${LATEST_VERSION#v}-x86_64.txz"
 
-# extract files
-tar -xf kitty-0.20.2-x86_64.txz -C ./AppDir/usr
+# Download the latest version of kitty
+wget "$LATEST_URL" -O "kitty-latest-x86_64.txz"
+
+# Extract files
+tar -xf "kitty-latest-x86_64.txz" -C ./AppDir/usr
 
 cd AppDir
 KITTY_VERSION=$(./usr/bin/kitty --version | cut -d ' ' -f2)
@@ -24,7 +28,7 @@ mkdir -p ./usr/lib \
 	./usr/share/icons/hicolor/128x128/apps \
 	./usr/share/icons/hicolor/48x48/apps
 
-# apply patches
+# Patch icon files
 #mv ./opt/google/chrome/product_logo_64.png  ./usr/share/icons/hicolor/64x64/apps/google-chrome.png
 #mv ./opt/google/chrome/product_logo_32.png  ./usr/share/icons/hicolor/32x32/apps/google-chrome.png
 #mv ./opt/google/chrome/product_logo_256.png ./usr/share/icons/hicolor/256x256/apps/google-chrome.png
@@ -47,4 +51,3 @@ chmod +x Kitty*.AppImage
 
 mkdir dist
 mv Kitty*.AppImage* ./dist
-
