@@ -1,11 +1,11 @@
 name: Release
+
 on:
   schedule:
-    - cron: "5 */12 * * *"
+    - cron: "0 0 * * 1"  # Runs every Monday at midnight UTC
   push:
     branches:
       - main
-
 
 jobs:
   Kitty:
@@ -14,17 +14,17 @@ jobs:
       matrix:
         version: ['3.8']
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - name: Build Kitty AppImage
-      run: ./build.sh
+      - name: Build Kitty AppImage
+        run: ./build.sh
        
-    - name: Release
-      uses: marvinpinto/action-automatic-releases@latest
-      with:
-        title: Kitty Stable AppImage Builds
-        automatic_release_tag: stable
-        prerelease: false
-        draft: false
-        files: ./kitty/dist/Kitty-*-x86_64.AppImage*
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Release
+        uses: marvinpinto/action-automatic-releases@latest
+        with:
+          title: Kitty Stable AppImage Builds
+          automatic_release_tag: stable
+          prerelease: false
+          draft: false
+          files: ./kitty/dist/Kitty-*-x86_64.AppImage*
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
